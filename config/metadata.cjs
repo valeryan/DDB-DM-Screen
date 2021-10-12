@@ -1,4 +1,4 @@
-const { author, dependencies, repository, version } = require('../package.json');
+const { author, dependencies, repository, homepage, version } = require('../package.json');
 
 module.exports = {
   name: 'D&DBeyond DM Screen',
@@ -6,7 +6,7 @@ module.exports = {
   version: version,
   author: author,
   source: repository.url,
-  updateURL: `${repository.url}/raw/master/dist/ddb-dm-screen.user.js`,
+  updateURL: `${homepage}/ddb-dm-screen.user.js`,
   license: `MIT; ${repository.url}/blob/master/LICENSE`,
   match: [
     'https://www.dndbeyond.com/campaigns/*'
