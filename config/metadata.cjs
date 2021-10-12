@@ -1,4 +1,4 @@
-const { author, dependencies, repository, version } = require('../package.json')
+const { author, dependencies, repository, version } = require('../package.json');
 
 module.exports = {
   name: 'D&DBeyond DM Screen',
@@ -6,8 +6,8 @@ module.exports = {
   version: version,
   author: author,
   source: repository.url,
-  updateURL:`${repository.url}/raw/master/dist/ddb-dm-screen.user.js`,
-  // 'license': 'MIT',
+  updateURL: `${repository.url}/raw/master/dist/ddb-dm-screen.user.js`,
+  license: `MIT; ${repository.url}/blob/master/LICENSE`,
   match: [
     'https://www.dndbeyond.com/campaigns/*'
   ],
@@ -17,12 +17,12 @@ module.exports = {
     `https://cdn.jsdelivr.net/npm/axios-userscript-adapter@${dependencies['axios-userscript-adapter']}/dist/axiosGmxhrAdapter.min.js`,
   ],
   grant: [
-    'GM.xmlHttpRequest',
-    'GM.setValue',
-    'GM.getValue'
+    'GM_xmlHttpRequest',
+    'GM_setValue',
+    'GM_getValue'
   ],
   connect: [
     'dndbeyond.com'
   ],
   'run-at': 'document-end'
-}
+};
