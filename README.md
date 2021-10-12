@@ -17,3 +17,33 @@ Remember to never paste unknown userscripts from some shady github repos to your
 
 ## Note about other DM Screen Scripts
 There are several such user scripts around and some Chrome extensions, etc. I draw inspiration from all these.
+
+## Development
+
+The development method is based on [webpack-usersript-template](https://github.com/Trim21/webpack-userscript-template).
+Development of this script requires a Chrome base browser for file system access by Tampermonkey.
+
+### Setup
+1. Allow Tampermonkey's access to local file URIs in Chrome, follow [tampermonkey/faq](https://tampermonkey.net/faq.php?ext=dhdg#Q204)
+2. Run the command `npm run dev`
+2. install deps with `npm i` or `npm ci`.
+3. `npm run dev` to start your development.
+4. open `webpack-userscript-template/dist/ddb-dm-screen.dev.user.js` in your Chrome browser and install it with your userscript manager.
+
+this userscript's meta contains `// @require file://path/to/dist/ddb-dm-screen.debug.user.js`,
+which take [src/index.ts](./src/index.ts) as entry point.
+
+every times you edit your metadata, you'll have to install it again,
+because Tampermonkey does not read it from dist every times.
+
+5. edit [src/index.ts](./src/index.ts)
+
+livereload is enabled by default, use [this chrome extension](https://chrome.google.com/webstore/detail/jnihajbhpnppcggbcgedagnkighmdlei)
+
+### dependencies
+
+Add dependencies to your [user script metadata's require section](./config/metadata.cjs#L13-L17) , and exclude them in [config/webpack.config.base.cjs](./config/webpack.config.base.cjs#L18-L20)
+
+## Deployment
+
+[github actions](./.github/workflows/deploy.yaml#L36) will deploy production userscript to this projects [gh-pages](https://valeryan.github.io/DDB-DB-Screen/).

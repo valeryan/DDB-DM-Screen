@@ -1,6 +1,6 @@
 const path = require("path");
 
-const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
+const { VueLoaderPlugin } = require("vue-loader");
 
 const webpackConfig = {
   resolve: {
@@ -19,6 +19,7 @@ const webpackConfig = {
     jquery: "$",
     axios: "axios",
     "axios-userscript-adapter": "axiosGmxhrAdapter",
+    vue: "Vue"
   },
   module: {
     rules: [
@@ -40,9 +41,15 @@ const webpackConfig = {
         test: /\.css$/,
         use: ["style-loader", "css-loader"],
       },
+      {
+        test: /\.vue$/,
+        loader: 'vue-loader'
+      }
     ],
   },
-  plugins: process.env.npm_config_report ? [new BundleAnalyzerPlugin()] : [],
+  plugins: [
+    new VueLoaderPlugin()
+  ],
 };
 
 module.exports = webpackConfig;

@@ -1,3 +1,6 @@
+import Vue from 'vue';
+import Card from './templates/Card.vue';
+
 import { get, post } from "./utils";
 import "./style/main.scss";
 
@@ -30,4 +33,10 @@ async function main() {
 
 main().catch((e) => {
   console.log(e);
+});
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const app = new Vue({
+  el: '.listing-body',
+  render: h => h(Card)
 });
