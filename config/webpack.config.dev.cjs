@@ -7,7 +7,7 @@ const metadata = require("./metadata.cjs");
 const webpackConfig = require("./webpack.config.base.cjs");
 
 metadata.require.push(
-  "file://" + path.resolve(__dirname, "../dist/index.debug.user.js")
+  "file://" + path.resolve(__dirname, "../dist/ddb-dm-screen.debug.user.js")
 );
 
 const cfg = merge(webpackConfig, {
@@ -16,7 +16,7 @@ const cfg = merge(webpackConfig, {
     dev: path.resolve(__dirname, "./empty.cjs"),
   },
   output: {
-    filename: "index.[name].user.js",
+    filename: "ddb-dm-screen.[name].user.js",
     path: path.resolve(__dirname, "../dist"),
   },
   devtool: "eval-source-map",
