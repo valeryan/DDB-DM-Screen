@@ -46,4 +46,4 @@ Add dependencies to your [user script metadata's require section](./config/metad
 
 ## Deployment
 
-[github actions](./.github/workflows/deploy.yaml#L36) will deploy production userscript to this projects [gh-pages](https://valeryan.github.io/DDB-DB-Screen/).
+[github actions](./.github/workflows/deploy.yaml#L36) will deploy production userscript to this projects [gh-pages](https://valeryan.github.io/DDB-DM-Screen/).
