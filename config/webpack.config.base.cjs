@@ -1,6 +1,7 @@
 const path = require("path");
-
+const webpack = require('webpack');
 const { VueLoaderPlugin } = require("vue-loader");
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 const webpackConfig = {
   resolve: {
@@ -12,17 +13,21 @@ const webpackConfig = {
   },
   entry: "./src/index.ts",
   output: {
+    publicPath: '/dist/',
     path: path.resolve(__dirname, "../dist"),
   },
   target: "web",
   externals: {
     jquery: "$",
     axios: "axios",
-    "axios-userscript-adapter": "axiosGmxhrAdapter",
-    vue: "Vue"
+    "axios-userscript-adapter": "axiosGmxhrAdapter"
   },
   module: {
     rules: [
+      {
+        test: /\.vue$/,
+        loader: 'vue-loader',
+      },
       {
         use: {
           loader: "babel-loader",
@@ -31,7 +36,17 @@ const webpackConfig = {
       },
       {
         test: /\.ts$/,
-        loader: "babel-loader", // use ts-loader if you like
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: "babel-loader",
+            options: { babelrc: true }
+          },
+          {
+            loader: "ts-loader",
+            options: { appendTsSuffixTo: [/\.vue$/], transpileOnly: true}
+          }
+        ]
       },
       {
         test: /\.s[ac]ss$/i,
@@ -40,15 +55,19 @@ const webpackConfig = {
       {
         test: /\.css$/,
         use: ["style-loader", "css-loader"],
-      },
-      {
-        test: /\.vue$/,
-        loader: 'vue-loader'
       }
     ],
   },
   plugins: [
-    new VueLoaderPlugin()
+    new ForkTsCheckerWebpackPlugin(),
+    new VueLoaderPlugin(),
+    new webpack.optimize.LimitChunkCountPlugin({
+      maxChunks: 1,
+    }),
+    new webpack.DefinePlugin({
+      __VUE_OPTIONS_API__: 'true',
+      __VUE_PROD_DEVTOOLS__: 'false'
+    })
   ],
 };
 
