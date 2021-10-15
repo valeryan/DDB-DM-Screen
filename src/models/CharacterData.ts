@@ -67,10 +67,17 @@ export interface ActiveCharacter {
   userName: string;
 }
 
+export interface Campaign {
+  id: number;
+  dmUserId: number;
+  name: string;
+  url: string;
+}
 export interface CharacterData {
   abilities?: Array<Ability>;
   armorClass?: number;
   avatarUrl?: string;
+  campaign?: Campaign;
   castingInfo?: SpellCasterInfo;
   characterId?: number;
   classes?: Array<Class>;
