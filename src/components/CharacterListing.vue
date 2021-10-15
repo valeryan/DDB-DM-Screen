@@ -1,6 +1,11 @@
 <template>
-  <ul class="ddbdms-character-list">
-    <CharacterCard v-for="char in characters" :key="char.characterId" :character="char"> </CharacterCard>
+  <ul class="dms-character-container">
+    <CharacterCard
+      v-for="char in characters"
+      :key="char.characterId"
+      :character="char"
+    >
+    </CharacterCard>
   </ul>
 </template>
 
@@ -29,8 +34,6 @@ const getSCDSData = async (ids: number[]) => {
   return result.data.foundCharacters;
 };
 
-
-
 export default defineComponent({
   name: "CharacterListing",
   components: {
@@ -44,11 +47,20 @@ export default defineComponent({
     const charIds = activeChars.map((ch) => {
       return ch.id;
     });
-    const scdsChars: CharacterData[] = await getSCDSData(charIds);
+    let scdsChars: CharacterData[] = await getSCDSData(charIds);
+
+    scdsChars = scdsChars.filter((ch) => {
+      return ch.isAssignedToPlayer;
+    });
 
     scdsChars.map((ch) => {
-      const ACChar = activeChars.find((el) => { return el.id === ch.characterId });
-      ch.avatarUrl = ACChar.avatarUrl;
+      const ACChar = activeChars.find((el) => {
+        return el.id === ch.characterId;
+      });
+      ch.avatarUrl =
+        ACChar.avatarUrl != ""
+          ? ACChar.avatarUrl
+          : "https://www.dndbeyond.com/content/1-0-1772-0/skins/waterdeep/images/characters/default-avatar.png";
       ch.userName = ACChar.userName;
       characters.value.push(ch);
     });
@@ -63,4 +75,23 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
+.dms-character-container {
+  /* We first create a flex layout context */
+  display: flex;
+
+  /* Then we define the flow direction
+     and if we allow the items to wrap
+   * Remember this is the same as:
+   * flex-direction: row;
+   * flex-wrap: wrap;
+   */
+  flex-flow: row wrap;
+
+  /* Then we define how is distributed the remaining space */
+  justify-content: space-around;
+
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
 </style>
