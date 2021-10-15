@@ -15,7 +15,7 @@
     "lint": "eslint --ext .ts,.js src",
     "preversion": "npm run lint",
     "postversion": "git push --follow-tags",
-    "analize": "npm_config_report=true npm run build",
+    "analyze": "npm_config_report=true npm run build",
     "build": "webpack --mode production --config config/webpack.config.production.cjs",
     "dev": "webpack --mode development --config config/webpack.config.dev.cjs"
   },

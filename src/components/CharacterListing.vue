@@ -41,31 +41,37 @@ export default defineComponent({
   },
   setup: async () => {
     let characters = ref<CharacterData[]>([]);
+    const fetchData = async () => {
+      const activeChars: ActiveCharacter[] = await getActiveCharacters();
 
-    const activeChars: ActiveCharacter[] = await getActiveCharacters();
-
-    const charIds = activeChars.map((ch) => {
-      return ch.id;
-    });
-    let scdsChars: CharacterData[] = await getSCDSData(charIds);
-
-    scdsChars = scdsChars.filter((ch) => {
-      return ch.isAssignedToPlayer;
-    });
-
-    scdsChars.map((ch) => {
-      const ACChar = activeChars.find((el) => {
-        return el.id === ch.characterId;
+      const charIds = activeChars.map((ch) => {
+        return ch.id;
       });
-      ch.avatarUrl =
-        ACChar.avatarUrl != ""
-          ? ACChar.avatarUrl
-          : "https://www.dndbeyond.com/content/1-0-1772-0/skins/waterdeep/images/characters/default-avatar.png";
-      ch.userName = ACChar.userName;
-      characters.value.push(ch);
-    });
+      let scdsChars: CharacterData[] = await getSCDSData(charIds);
 
-    console.log(characters.value);
+      scdsChars = scdsChars.filter((ch) => {
+        return ch.isAssignedToPlayer;
+      });
+
+      characters.value = scdsChars
+        .map((ch) => {
+          const ACChar = activeChars.find((el) => {
+            return el.id === ch.characterId;
+          });
+          ch.avatarUrl =
+            ACChar.avatarUrl != ""
+              ? ACChar.avatarUrl
+              : "https://www.dndbeyond.com/content/1-0-1772-0/skins/waterdeep/images/characters/default-avatar.png";
+          ch.userName = ACChar.userName;
+          return ch;
+        })
+        .sort((a, b) => {
+          return a.name > b.name ? 1 : -1;
+        });
+    };
+
+    fetchData();
+    setInterval(fetchData, 30000);
 
     return {
       characters,
@@ -76,22 +82,17 @@ export default defineComponent({
 
 <style lang="scss">
 .dms-character-container {
-  /* We first create a flex layout context */
-  display: flex;
-
-  /* Then we define the flow direction
-     and if we allow the items to wrap
-   * Remember this is the same as:
-   * flex-direction: row;
-   * flex-wrap: wrap;
-   */
-  flex-flow: row wrap;
-
-  /* Then we define how is distributed the remaining space */
-  justify-content: space-around;
-
+  display: grid;
+  grid-gap: 10px;
   padding: 0;
   margin: 0;
   list-style: none;
+  grid-template-columns: repeat(1, 1fr);
+  @media screen and (min-width: 740px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (min-width: 1100px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 </style>
