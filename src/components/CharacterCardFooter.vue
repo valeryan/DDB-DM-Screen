@@ -41,6 +41,80 @@
         "
         >Deactivate</a
       >
+
+      <div
+        v-if="character.userId == appState.authUserId"
+        class="ddb-campaigns-character-card-footer-links-more"
+      >
+        <div class="links">
+          <div class="button-alt-group">
+            <span
+              class="
+                ddb-campaigns-character-card-footer-links-item
+                ddb-campaigns-character-card-footer-links-item-more
+              "
+            >
+              More
+            </span>
+            <div class="button-alt-group-dropdown">
+              <a
+                class="
+                  button-alt-group-item
+                  modal-link
+                  ddb-campaigns-character-card-footer-links-item-more-deactivate
+                "
+                :href="
+                  '/campaigns/' +
+                  appState.campaign.id +
+                  '/deactivate-character/' +
+                  character.characterId
+                "
+                data-title="Deactivate Character"
+                data-confirm-message="Are you sure you want to deactivate this character?"
+                data-modal-class="t-deactivate-character-modal"
+                >Deactivate</a
+              >
+
+              <a
+                class="
+                  button-alt-group-item
+                  modal-link
+                  ddb-campaigns-character-card-footer-links-item-more-remove
+                "
+                :href="
+                  '/campaigns/' +
+                  appState.campaign.id +
+                  '/remove-character/' +
+                  character.characterId
+                "
+                data-title="Remove Character"
+                data-confirm-message="Are you sure you want to remove this character?"
+                data-modal-class="t-remove-character-modal"
+                >Remove</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <a
+        v-else
+        class="
+          modal-link
+          ddb-campaigns-character-card-footer-links-item
+          ddb-campaigns-character-card-footer-links-item-remove
+        "
+        :href="
+          '/campaigns/' +
+          appState.campaign.id +
+          '/remove-character/' +
+          character.characterId
+        "
+        data-title="Remove Character"
+        data-confirm-message="Are you sure you want to remove this character?"
+        data-modal-class="t-remove-character-modal"
+        >Remove</a
+      >
     </div>
   </div>
 </template>

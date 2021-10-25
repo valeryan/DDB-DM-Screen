@@ -18,7 +18,8 @@ const webpackConfig = {
   },
   target: "web",
   externals: {
-    jquery: "$",
+    "jwt-decode": "jwt_decode",
+    vue: "Vue",
     axios: "axios",
     "axios-userscript-adapter": "axiosGmxhrAdapter"
   },
