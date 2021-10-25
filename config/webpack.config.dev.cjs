@@ -1,6 +1,8 @@
 const path = require("path");
 const { merge } = require("webpack-merge");
 const LiveReloadPlugin = require("webpack-livereload-plugin");
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const HtmlWebpackTagsPlugin = require('html-webpack-tags-plugin');
 const UserScriptMetaDataPlugin = require("userscript-metadata-webpack-plugin");
 
 const metadata = require("./metadata.cjs");
@@ -31,6 +33,8 @@ const cfg = merge(webpackConfig, {
     new UserScriptMetaDataPlugin({
       metadata,
     }),
+    new HtmlWebpackPlugin(),
+    new HtmlWebpackTagsPlugin({ scripts: ['http://localhost:35729/livereload.js?snipver=1',], append: true }),
   ],
 });
 
