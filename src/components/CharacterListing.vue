@@ -14,15 +14,15 @@ import { defineComponent, ref } from "vue";
 import { get, post } from "../utils";
 import CharacterCard from "./CharacterCard.vue";
 import { CharacterData, ActiveCharacter } from "../models/CharacterData";
+import { appStore } from "../store/app-store";
 
-const campaignIDRegex = /\/(\d+)\/*$/;
+const iDRegex = /\/(\d+)\/*$/;
 const campaignBaseURL = "https://www.dndbeyond.com/api/campaign";
 const scdsBaseURL = "https://character-service-scds.dndbeyond.com/";
 
-const getActiveCharacters = async () => {
-  const campaignID = window.location.pathname.match(campaignIDRegex);
+const getActiveCharacters = async (campaignID: number) => {
   const result = await get(
-    `${campaignBaseURL}/stt/active-short-characters/${campaignID[1]}`
+    `${campaignBaseURL}/stt/active-short-characters/${campaignID}`
   );
   return result.data.data;
 };
@@ -34,15 +34,38 @@ const getSCDSData = async (ids: number[]) => {
   return result.data.foundCharacters;
 };
 
+const setInviteCode = () => {
+  const inviteUrl = document
+    .getElementsByClassName(
+      "ddb-campaigns-invite-footer-item ddb-campaigns-invite-footer-item-copy-link"
+    )[0]
+    .attributes.getNamedItem("data-clipboard-text").value;
+     const inviteCode = parseInt(inviteUrl.match(iDRegex)[1]);
+     appStore.setInviteCode(inviteCode);
+};
+
+const setCampaignData = async (campaignID: number) => {
+  const result = await get(
+    `${campaignBaseURL}/stt/active-campaigns/${campaignID}`
+  );
+  const campaign = result.data.data;
+  appStore.setCampaign(campaign);
+};
+
 export default defineComponent({
   name: "CharacterListing",
   components: {
     CharacterCard,
   },
   setup: async () => {
+    const campaignID = parseInt(window.location.pathname.match(iDRegex)[1]);
+
+    setInviteCode();
+    setCampaignData(campaignID);
+
     let characters = ref<CharacterData[]>([]);
     const fetchData = async () => {
-      const activeChars: ActiveCharacter[] = await getActiveCharacters();
+      const activeChars: ActiveCharacter[] = await getActiveCharacters(campaignID);
 
       const charIds = activeChars.map((ch) => {
         return ch.id;
@@ -86,6 +109,7 @@ export default defineComponent({
   grid-gap: 10px;
   padding: 0;
   margin: 0;
+  margin-bottom: 20px;
   list-style: none;
   grid-template-columns: repeat(1, 1fr);
   @media screen and (min-width: 740px) {

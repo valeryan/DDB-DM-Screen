@@ -18,7 +18,8 @@ const webpackConfig = {
   },
   target: "web",
   externals: {
-    jquery: "$",
+    "jwt-decode": "jwt_decode",
+    vue: "Vue",
     axios: "axios",
     "axios-userscript-adapter": "axiosGmxhrAdapter"
   },
@@ -50,7 +51,7 @@ const webpackConfig = {
       },
       {
         test: /\.s[ac]ss$/i,
-        use: ["style-loader", "css-loader", "sass-loader"],
+        use: ["style-loader", { loader: "css-loader", options: { url: false}}, "sass-loader"],
       },
       {
         test: /\.css$/,

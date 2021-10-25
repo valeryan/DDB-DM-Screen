@@ -73,6 +73,7 @@ export interface Campaign {
   name: string;
   url: string;
 }
+
 export interface CharacterData {
   abilities?: Array<Ability>;
   armorClass?: number;

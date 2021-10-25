@@ -27,7 +27,7 @@
   "dependencies": {
     "axios": "^0.22.0",
     "axios-userscript-adapter": "^0.1.7",
-    "jquery": "^3.6.0",
+    "jwt-decode": "^3.1.2",
     "vue": "^3.2.20"
   },
   "devDependencies": {
