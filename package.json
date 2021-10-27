@@ -28,6 +28,9 @@
     "axios": "^0.22.0",
     "axios-userscript-adapter": "^0.1.7",
     "jwt-decode": "^3.1.2",
+    "mitt": "^3.0.0",
+    "primeicons": "^4.1.0",
+    "primevue": "^3.8.0",
     "vue": "^3.2.20"
   },
   "devDependencies": {

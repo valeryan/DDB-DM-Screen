@@ -7,10 +7,15 @@
     >
     </CharacterCard>
   </ul>
+  <ConfirmDialog
+    :breakpoints="{ '960px': '75vw', '640px': '100vw' }"
+    :style="{ width: '50vw' }"
+  ></ConfirmDialog>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
+import ConfirmDialog from "primevue/confirmdialog";
 import { get, post } from "../utils";
 import CharacterCard from "./CharacterCard.vue";
 import { CharacterData, ActiveCharacter } from "../models/CharacterData";
@@ -40,8 +45,8 @@ const setInviteCode = () => {
       "ddb-campaigns-invite-footer-item ddb-campaigns-invite-footer-item-copy-link"
     )[0]
     .attributes.getNamedItem("data-clipboard-text").value;
-     const inviteCode = parseInt(inviteUrl.match(iDRegex)[1]);
-     appStore.setInviteCode(inviteCode);
+  const inviteCode = parseInt(inviteUrl.match(iDRegex)[1]);
+  appStore.setInviteCode(inviteCode);
 };
 
 const setCampaignData = async (campaignID: number) => {
@@ -55,6 +60,7 @@ const setCampaignData = async (campaignID: number) => {
 export default defineComponent({
   name: "CharacterListing",
   components: {
+    ConfirmDialog,
     CharacterCard,
   },
   setup: async () => {
@@ -65,7 +71,9 @@ export default defineComponent({
 
     let characters = ref<CharacterData[]>([]);
     const fetchData = async () => {
-      const activeChars: ActiveCharacter[] = await getActiveCharacters(campaignID);
+      const activeChars: ActiveCharacter[] = await getActiveCharacters(
+        campaignID
+      );
 
       const charIds = activeChars.map((ch) => {
         return ch.id;
