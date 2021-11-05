@@ -20,20 +20,17 @@ import { get, post } from "../utils";
 import CharacterCard from "./CharacterCard.vue";
 import { CharacterData, ActiveCharacter } from "../models/CharacterData";
 import { appStore } from "../store/app-store";
-
-const iDRegex = /\/(\d+)\/*$/;
-const campaignBaseURL = "https://www.dndbeyond.com/api/campaign";
-const scdsBaseURL = "https://character-service-scds.dndbeyond.com/";
+import * as constants from "../constants";
 
 const getActiveCharacters = async (campaignID: number) => {
   const result = await get(
-    `${campaignBaseURL}/stt/active-short-characters/${campaignID}`
+    `${constants.campaignBaseURL}/stt/active-short-characters/${campaignID}`
   );
   return result.data.data;
 };
 
 const getSCDSData = async (ids: number[]) => {
-  const result = await post(scdsBaseURL + "v1/characters", {
+  const result = await post(constants.scdsBaseURL + "v1/characters", {
     characterIds: ids,
   });
   return result.data.foundCharacters;
@@ -45,13 +42,13 @@ const setInviteCode = () => {
       "ddb-campaigns-invite-footer-item ddb-campaigns-invite-footer-item-copy-link"
     )[0]
     .attributes.getNamedItem("data-clipboard-text").value;
-  const inviteCode = parseInt(inviteUrl.match(iDRegex)[1]);
+  const inviteCode = parseInt(inviteUrl.match(constants.iDRegex)[1]);
   appStore.setInviteCode(inviteCode);
 };
 
 const setCampaignData = async (campaignID: number) => {
   const result = await get(
-    `${campaignBaseURL}/stt/active-campaigns/${campaignID}`
+    `${constants.campaignBaseURL}/stt/active-campaigns/${campaignID}`
   );
   const campaign = result.data.data;
   appStore.setCampaign(campaign);
@@ -64,17 +61,18 @@ export default defineComponent({
     CharacterCard,
   },
   setup: async () => {
-    const campaignID = parseInt(window.location.pathname.match(iDRegex)[1]);
+    const campaignID = parseInt(window.location.pathname.match(constants.iDRegex)[1]);
 
     setInviteCode();
     setCampaignData(campaignID);
 
     let characters = ref<CharacterData[]>([]);
+
     const fetchData = async () => {
       const activeChars: ActiveCharacter[] = await getActiveCharacters(
         campaignID
       );
-
+      console.log(activeChars);
       const charIds = activeChars.map((ch) => {
         return ch.id;
       });
@@ -89,10 +87,6 @@ export default defineComponent({
           const ACChar = activeChars.find((el) => {
             return el.id === ch.characterId;
           });
-          ch.avatarUrl =
-            ACChar.avatarUrl != ""
-              ? ACChar.avatarUrl
-              : "https://www.dndbeyond.com/content/1-0-1772-0/skins/waterdeep/images/characters/default-avatar.png";
           ch.userName = ACChar.userName;
           return ch;
         })
@@ -101,7 +95,9 @@ export default defineComponent({
         });
     };
 
-    fetchData();
+    await fetchData();
+
+    console.log(characters.value);
     setInterval(fetchData, 30000);
 
     return {

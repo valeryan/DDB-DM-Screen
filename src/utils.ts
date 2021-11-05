@@ -47,6 +47,18 @@ export function post<T = any, R = AxiosResponse<T>>(
   });
 }
 
+export async function postForm<T = any, R = AxiosResponse<T>>(
+  url: string,
+  data?: any
+): Promise<R> {
+  const token = await getAuthToken();
+  return axios.post(url, data, {
+    headers: {
+      'Authorization': token,
+      'Content-Type': 'multipart/form-data'
+    }
+  });
+}
 const getAuthToken = async () => {
   const result: AxiosResponse<any> = await axios.post(
     authURL,

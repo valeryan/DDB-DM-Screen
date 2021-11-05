@@ -97,9 +97,12 @@
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
 import { useConfirm } from "primevue/useconfirm";
-import { get, post } from "../utils";
+import Cookies from "js-cookie";
+import FormData from "form-data";
+import { get, post, postForm } from "../utils";
 import { CharacterData } from "../models/CharacterData";
 import { appStore } from "../store/app-store";
+import * as constants from "../constants";
 
 export default defineComponent({
   name: "CharacterCardFooter",
@@ -111,15 +114,19 @@ export default defineComponent({
   },
   methods: {
     async showModal(header: string, msg: string, action: string) {
-      const result = await get(action);
-      console.log(result);
       this.confirm.require({
         message: msg,
         header: header,
         acceptLabel: "Confirm",
         rejectLabel: "Cancel",
-        accept: () => {
-          console.log(action);
+        accept: async () => {
+          const vCookie = await this.verificationCookie();
+          const formData = new FormData();
+          formData.append("request-verification-token", vCookie);
+          const response = await postForm(action, formData);
+          if (response.data.RedirectUrl !== undefined) {
+            window.location.replace(response.data.RedirectUrl);
+          }
         },
         reject: () => {
           //callback to execute when user rejects the action
@@ -146,6 +153,14 @@ export default defineComponent({
         "Are you sure you want to deactivate this character?",
         ev.target.href
       );
+    },
+    async verificationCookie() {
+      let vCookie = Cookies.get("RequestVerificationToken");
+      if (vCookie === undefined) {
+        await post(`${constants.baseURL}/refresh-request-verification-token`);
+        vCookie = Cookies.get("RequestVerificationToken");
+      }
+      return vCookie;
     },
   },
   setup: () => {

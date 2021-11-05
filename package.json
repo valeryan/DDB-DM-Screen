@@ -17,7 +17,7 @@
     "postversion": "git push --follow-tags",
     "analyze": "npm_config_report=true npm run build",
     "build": "webpack --mode production --config config/webpack.config.production.cjs",
-    "dev": "webpack --mode development --config config/webpack.config.dev.cjs"
+    "start": "webpack --mode development --config config/webpack.config.dev.cjs"
   },
   "repository": {
     "type": "git",
@@ -27,6 +27,8 @@
   "dependencies": {
     "axios": "^0.22.0",
     "axios-userscript-adapter": "^0.1.7",
+    "form-data": "^4.0.0",
+    "js-cookie": "^3.0.1",
     "jwt-decode": "^3.1.2",
     "mitt": "^3.0.0",
     "primeicons": "^4.1.0",
@@ -38,6 +40,7 @@
     "@babel/preset-env": "^7.15.8",
     "@babel/preset-typescript": "^7.15.0",
     "@types/greasemonkey": "^4.0.2",
+    "@types/js-cookie": "^3.0.0",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
     "@vue/compiler-sfc": "^3.2.20",
