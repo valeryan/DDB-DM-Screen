@@ -1,54 +1,81 @@
 <template>
   <ul class="dms-character-container">
-    <CharacterCard
-      v-for="char in characters"
-      :key="char.characterId"
-      :character="char"
-    >
+    <CharacterCard v-for="char in characters" :key="char.characterId" :character="char">
     </CharacterCard>
   </ul>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import { get, post } from "../utils";
 import CharacterCard from "./CharacterCard.vue";
 import { CharacterData, ActiveCharacter } from "../models/CharacterData";
 import { appStore } from "../store/app-store";
+import { get, post } from "../utils/apiAdapter";
 
 const iDRegex = /\/(\d+)\/*$/;
-const campaignBaseURL = "https://www.dndbeyond.com/api/campaign";
-const scdsBaseURL = "https://character-service-scds.dndbeyond.com/";
+const scdsUrl = "https://character-service-scds.dndbeyond.com/v2/characters";
+const baseUrl = "https://www.dndbeyond.com";
+const campaignBaseUrl = `${baseUrl}/api/campaign/stt`;
+const campaignUrl = `${campaignBaseUrl}/active-campaigns`;
+const activeCharacterUrl = `${campaignBaseUrl}/active-short-characters`;
+const defaultAvatarUrl = `${baseUrl}/content/1-0-1772-0/skins/waterdeep/images/characters/default-avatar.png`;
+const inviteFooterClass = "ddb-campaigns-invite-footer-item ddb-campaigns-invite-footer-item-copy-link";
+
+interface CampaignResponse {
+  id: number;
+  dmId: number;
+  dmUsername: string;
+  name: string;
+  playerCount: number;
+}
+
+interface simpleCharacterResponse {
+  foundCharacters: CharacterData[];
+  queuedIds: number[];
+  notFoundIds: number[];
+}
 
 const getActiveCharacters = async (campaignID: number) => {
-  const result = await get(
-    `${campaignBaseURL}/stt/active-short-characters/${campaignID}`
+  const result = await get<ActiveCharacter[]>(
+    `${activeCharacterUrl}/${campaignID}`
   );
-  return result.data.data;
+  return result;
 };
 
-const getSCDSData = async (ids: number[]) => {
-  const result = await post(scdsBaseURL + "v1/characters", {
+const getSimpleCharacterData = async (ids: number[]) => {
+  const result = await post<simpleCharacterResponse>(scdsUrl, {
     characterIds: ids,
   });
-  return result.data.foundCharacters;
+  return result.foundCharacters;
 };
 
 const setInviteCode = () => {
-  const inviteUrl = document
-    .getElementsByClassName(
-      "ddb-campaigns-invite-footer-item ddb-campaigns-invite-footer-item-copy-link"
-    )[0]
-    .attributes.getNamedItem("data-clipboard-text").value;
-     const inviteCode = parseInt(inviteUrl.match(iDRegex)[1]);
-     appStore.setInviteCode(inviteCode);
+  const inviteElements = document.getElementsByClassName(
+    inviteFooterClass
+  );
+  if (!inviteElements || inviteElements.length < 1) {
+    return;
+  }
+
+  const inviteUrl = inviteElements[0].attributes.getNamedItem("data-clipboard-text")?.value;
+  if (!inviteUrl) {
+    return;
+  }
+
+  const inviteMatch = inviteUrl.match(iDRegex);
+  if (!inviteMatch || inviteMatch.length < 2) {
+    return;
+  }
+
+  const inviteCode = parseInt(inviteMatch[1]);
+  appStore.setInviteCode(inviteCode);
 };
 
 const setCampaignData = async (campaignID: number) => {
-  const result = await get(
-    `${campaignBaseURL}/stt/active-campaigns/${campaignID}`
+  const result = await get<CampaignResponse>(
+    `${campaignUrl}/${campaignID}`
   );
-  const campaign = result.data.data;
+  const campaign = result;
   appStore.setCampaign(campaign);
 };
 
@@ -58,44 +85,59 @@ export default defineComponent({
     CharacterCard,
   },
   setup: async () => {
-    const campaignID = parseInt(window.location.pathname.match(iDRegex)[1]);
+    let characters = ref<CharacterData[]>([]);
+
+    // Campaign phase
+    const campaignIdMatch = window.location.pathname.match(iDRegex);
+    if (!campaignIdMatch) {
+      return {
+        characters,
+      };
+    }
+    const campaignID = parseInt(campaignIdMatch[1]);
 
     setInviteCode();
     setCampaignData(campaignID);
 
-    let characters = ref<CharacterData[]>([]);
+    // Character phase
     const fetchData = async () => {
       const activeChars: ActiveCharacter[] = await getActiveCharacters(campaignID);
 
       const charIds = activeChars.map((ch) => {
         return ch.id;
       });
-      let scdsChars: CharacterData[] = await getSCDSData(charIds);
 
-      scdsChars = scdsChars.filter((ch) => {
+      let simpleCharacters: CharacterData[] = await getSimpleCharacterData(charIds);
+
+      simpleCharacters = simpleCharacters.filter((ch) => {
         return ch.isAssignedToPlayer;
       });
 
-      characters.value = scdsChars
+      characters.value = simpleCharacters
         .map((ch) => {
-          const ACChar = activeChars.find((el) => {
+          const active = activeChars.find((el) => {
             return el.id === ch.characterId;
           });
-          ch.avatarUrl =
-            ACChar.avatarUrl != ""
-              ? ACChar.avatarUrl
-              : "https://www.dndbeyond.com/content/1-0-1772-0/skins/waterdeep/images/characters/default-avatar.png";
-          ch.userName = ACChar.userName;
+
+          const avatarUrl =
+            active && active.avatarUrl
+              ? active.avatarUrl
+              : defaultAvatarUrl;
+          const userName = active && active.userName ? active.userName : "Unknown";
+
+          ch.avatarUrl = avatarUrl;
+          ch.userName = userName;
           return ch;
         })
         .sort((a, b) => {
-          return a.name > b.name ? 1 : -1;
+          const aName = a && a.name ? a.name : "";
+          const bName = b && b.name ? b.name : "";
+          return aName.localeCompare(bName);
         });
     };
 
     fetchData();
     setInterval(fetchData, 30000);
-
     return {
       characters,
     };
@@ -112,9 +154,11 @@ export default defineComponent({
   margin-bottom: 20px;
   list-style: none;
   grid-template-columns: repeat(1, 1fr);
+
   @media screen and (min-width: 740px) {
     grid-template-columns: repeat(2, 1fr);
   }
+
   @media (min-width: 1100px) {
     grid-template-columns: repeat(3, 1fr);
   }

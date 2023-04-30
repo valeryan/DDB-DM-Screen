@@ -1,13 +1,13 @@
-const { merge } = require("webpack-merge");
-const UserScriptMetaDataPlugin = require("userscript-metadata-webpack-plugin");
+const { merge } = require('webpack-merge');
+const { UserScriptMetaDataPlugin } = require('userscript-metadata-webpack-plugin');
 
-const metadata = require("./metadata.cjs");
-const webpackConfig = require("./webpack.config.base.cjs");
+const metadata = require('./metadata.cjs');
+const webpackConfig = require('./webpack.config.base.cjs');
 
 const cfg = merge(webpackConfig, {
-  mode: "production",
+  mode: 'production',
   output: {
-    filename: "ddb-dm-screen.user.js",
+    filename: 'ddb-dm-screen.user.js',
   },
   plugins: [
     new UserScriptMetaDataPlugin({

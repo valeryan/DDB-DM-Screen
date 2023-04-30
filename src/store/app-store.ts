@@ -1,4 +1,4 @@
-import { Store } from "./store";
+import { Store } from './store';
 
 interface Campaign extends Object {
   id: number;
@@ -20,7 +20,7 @@ class AppStore extends Store<AppData> {
     return {
       inviteCode: 0,
       authUserId: 0,
-      authUserName: "",
+      authUserName: '',
     };
   }
 

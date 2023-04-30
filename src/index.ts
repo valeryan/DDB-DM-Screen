@@ -1,7 +1,7 @@
-import { createApp } from "vue";
-import App from "./components/App.vue";
+import { createApp } from 'vue';
+import App from './components/App.vue';
 
 console.log('DDB DM Screen Started');
 
 const app = createApp(App);
-app.mount(".listing-body");
+app.mount('.listing-body');

@@ -1,5 +1,5 @@
 <template>
-  <div class="dms-footer">
+  <div class="dms-footer" v-if="character">
     <div class="dms-footer-links">
       <a
         :href="
@@ -24,7 +24,7 @@
         v-if="character.userId == appState.authUserId"
         :href="
           '/campaigns/' +
-          appState.campaign.id +
+          appState.campaign?.id +
           '/' +
           appState.inviteCode +
           '/unclaim-assigned-character'
@@ -35,7 +35,7 @@
         v-else
         :href="
           '/campaigns/' +
-          appState.campaign.id +
+          appState.campaign?.id +
           '/deactivate-character/' +
           character.characterId
         "
@@ -65,7 +65,7 @@
                 "
                 :href="
                   '/campaigns/' +
-                  appState.campaign.id +
+                  appState.campaign?.id +
                   '/deactivate-character/' +
                   character.characterId
                 "
@@ -83,7 +83,7 @@
                 "
                 :href="
                   '/campaigns/' +
-                  appState.campaign.id +
+                  appState.campaign?.id +
                   '/remove-character/' +
                   character.characterId
                 "
@@ -106,7 +106,7 @@
         "
         :href="
           '/campaigns/' +
-          appState.campaign.id +
+          appState.campaign?.id +
           '/remove-character/' +
           character.characterId
         "
@@ -121,14 +121,14 @@
 
 <script lang="ts">
 import { CharacterData } from "../models/CharacterData";
-import { defineComponent, PropType } from "vue";
+import { defineComponent } from "vue";
 import { appStore } from "../store/app-store";
 
 export default defineComponent({
   name: "CharacterCardFooter",
   props: {
     character: {
-      type: Object as PropType<CharacterData>,
+      type: Object as () => CharacterData,
       require: true,
     },
   },

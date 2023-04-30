@@ -1,13 +1,14 @@
 <template>
-  <li class="dms-card">
+  <li class="dms-card" v-if="character">
     <CharacterCardHeader :character="character"></CharacterCardHeader>
     <CharacterCardFooter :character="character"></CharacterCardFooter>
   </li>
+  <li v-else>Character Data Not Found</li>
 </template>
 
 <script lang="ts">
 import { CharacterData } from "../models/CharacterData";
-import { defineComponent, PropType } from "vue";
+import { PropType, defineComponent } from "vue";
 import CharacterCardHeader from "./CharacterCardHeader.vue";
 import CharacterCardFooter from "./CharacterCardFooter.vue";
 import { appStore } from "../store/app-store";
