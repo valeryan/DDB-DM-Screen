@@ -74,6 +74,33 @@ export interface Campaign {
   url: string;
 }
 
+export interface Backdrop {
+  isDefault: boolean;
+  backdropAvatarUrl: string;
+  largeBackdropAvatarUrl: string;
+  smallBackdropAvatarUrl: string;
+  thumbnailBackdropAvatarUrl: string;
+}
+
+export interface Avatar {
+  avatarUrl: string;
+  frameUrl: string;
+}
+
+export interface CharacterTheme {
+  isDefault: boolean;
+  isDarkMode: boolean;
+  backgroundColor: string;
+  themeColor: string;
+  name: string;
+}
+
+export interface Decorations {
+  backdrop: Backdrop,
+  avatar: Avatar,
+  characterTheme: CharacterTheme,
+}
+
 export interface CharacterData {
   abilities?: Array<Ability>;
   armorClass?: number;
@@ -85,6 +112,7 @@ export interface CharacterData {
   conditions?: Array<Condition>;
   currentXp?: number;
   deathSaveInfo?: DeathSaveInfo;
+  decorations: Decorations;
   hitPointInfo?: HitPointInfo;
   immunities?: Array<DefenseAdjustment>;
   initiativeBonus?: number;

@@ -1,10 +1,24 @@
 <template>
   <div class="dms-header" v-if="character">
+    <div
+      class="dms-header-background"
+      :style="
+        'background-image: url(' + getBackdrop(character.decorations) + ');'
+      "
+    ></div>
     <div class="dms-character">
       <div class="dms-portrait">
         <div
           class="dms-portrait-image"
-          :style="'background-image: url(' + character.avatarUrl + ');'"
+          :style="
+            'background-image: url(' + getAvatar(character.decorations) + ');'
+          "
+        ></div>
+        <div
+          class="dms-portrait-frame"
+          :style="
+            'background-image: url(' + getFrame(character.decorations) + ');'
+          "
         ></div>
       </div>
       <div class="dms-info">
@@ -55,12 +69,24 @@
 </template>
 
 <script lang="ts">
-import { CharacterData } from "../models/CharacterData";
+import { CharacterData, Decorations } from "../models/CharacterData";
 import { defineComponent, PropType } from "vue";
 import { appStore } from "../store/app-store";
+import { constants } from "../utils";
 
 export default defineComponent({
   name: "CharacterCardHeader",
+  methods: {
+    getAvatar(decorations: Decorations) {
+      return decorations.avatar.avatarUrl ?? constants.defaultAvatarUrl;
+    },
+    getFrame(decorations: Decorations) {
+      return decorations.avatar.frameUrl;
+    },
+    getBackdrop(decorations: Decorations) {
+      return decorations.backdrop.backdropAvatarUrl;
+    },
+  },
   props: {
     character: {
       type: Object as PropType<CharacterData>,
@@ -80,7 +106,29 @@ export default defineComponent({
   padding: 10px;
   background-color: rgb(27, 27, 27);
   color: #fff;
+  .dms-header-background {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: top;
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(1px);
+    }
+  }
   .dms-character {
+    position: relative;
+    z-index: 1;
     width: 100%;
     display: flex;
     margin: 10px 0;
@@ -90,10 +138,21 @@ export default defineComponent({
     .dms-portrait-image {
       background-position: center center;
       background-size: cover;
-      border-radius: 3px;
+      border-radius: 50%;
+      border: none;
       height: 60px;
       width: 60px;
       margin-right: 10px;
+    }
+    .dms-portrait-frame {
+      position: absolute;
+      background-size: contain;
+      background-repeat: no-repeat;
+      width: 85px;
+      height: 85px;
+      top: -13px;
+      left: -13px;
+      overflow: hidden;
     }
     .dms-info {
       flex: 1 1 100%;
@@ -106,6 +165,8 @@ export default defineComponent({
   }
 
   .dms-stats {
+    position: relative;
+    z-index: 1;
     width: 100%;
     display: flex;
     margin: 10px 0;

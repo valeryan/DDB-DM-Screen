@@ -57,7 +57,7 @@
           <a
             :href="
               '/campaigns/' +
-              appState.campaign.id +
+              appState.campaign?.id +
               '/deactivate-character/' +
               character.characterId
             "
@@ -68,7 +68,7 @@
           <a
             :href="
               '/campaigns/' +
-              appState.campaign.id +
+              appState.campaign?.id +
               '/remove-character/' +
               character.characterId
             "
@@ -99,7 +99,10 @@ import { defineComponent } from "vue";
 import { useConfirm } from "primevue/useconfirm";
 import { CharacterData } from "../models/CharacterData";
 import { appStore } from "../store/app-store";
-import { get } from "../utils/apiAdapter";
+import Cookies from "js-cookie";
+import FormData from "form-data";
+import { constants } from "../utils";
+import { post, postForm } from "../utils/apiAdapter";
 
 export default defineComponent({
   name: "CharacterCardFooter",
@@ -111,15 +114,19 @@ export default defineComponent({
   },
   methods: {
     async showModal(header: string, msg: string, action: string) {
-      const result = await get(action);
-      console.log(result);
       this.confirm.require({
         message: msg,
         header: header,
         acceptLabel: "Confirm",
         rejectLabel: "Cancel",
-        accept: () => {
-          console.log(action);
+        accept: async () => {
+          const vCookie = await this.verificationCookie();
+          const formData = new FormData();
+          formData.append("request-verification-token", vCookie);
+          const response = await postForm<any>(action, formData);
+          if (response.RedirectUrl !== undefined) {
+            window.location.replace(response.RedirectUrl);
+          }
         },
         reject: () => {
           //callback to execute when user rejects the action
@@ -146,6 +153,14 @@ export default defineComponent({
         "Are you sure you want to deactivate this character?",
         ev.target.href
       );
+    },
+    async verificationCookie() {
+      let vCookie = Cookies.get("RequestVerificationToken");
+      if (vCookie === undefined) {
+        await post(`${constants.baseUrl}/refresh-request-verification-token`);
+        vCookie = Cookies.get("RequestVerificationToken");
+      }
+      return vCookie;
     },
   },
   setup: () => {
