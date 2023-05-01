@@ -3,10 +3,15 @@
     <CharacterCard v-for="char in characters" :key="char.characterId" :character="char">
     </CharacterCard>
   </ul>
+  <ConfirmDialog
+    :breakpoints="{ '960px': '75vw', '640px': '100vw' }"
+    :style="{ width: '50vw' }"
+  ></ConfirmDialog>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
+import ConfirmDialog from "primevue/confirmdialog";
 import CharacterCard from "./CharacterCard.vue";
 import { CharacterData, ActiveCharacter } from "../models/CharacterData";
 import { appStore } from "../store/app-store";
@@ -82,6 +87,7 @@ const setCampaignData = async (campaignID: number) => {
 export default defineComponent({
   name: "CharacterListing",
   components: {
+    ConfirmDialog,
     CharacterCard,
   },
   setup: async () => {
@@ -101,7 +107,9 @@ export default defineComponent({
 
     // Character phase
     const fetchData = async () => {
-      const activeChars: ActiveCharacter[] = await getActiveCharacters(campaignID);
+      const activeChars: ActiveCharacter[] = await getActiveCharacters(
+        campaignID
+      );
 
       const charIds = activeChars.map((ch) => {
         return ch.id;

@@ -17,7 +17,7 @@
     "postversion": "git push --follow-tags",
     "analyze": "npm_config_report=true npm run build",
     "build": "webpack --mode production --config config/webpack.config.production.cjs",
-    "dev": "webpack --mode development --config config/webpack.config.dev.cjs"
+    "start": "webpack --mode development --config config/webpack.config.dev.cjs"
   },
   "repository": {
     "type": "git",
@@ -26,7 +26,12 @@
   "private": true,
   "dependencies": {
     "@trim21/gm-fetch": "^0.1.13",
+    "form-data": "^4.0.0",
+    "js-cookie": "^3.0.1",
     "jwt-decode": "^3.1.2",
+    "mitt": "^3.0.0",
+    "primeicons": "^4.1.0",
+    "primevue": "^3.8.0",
     "vue": "^3.2.47"
   },
   "devDependencies": {
@@ -34,6 +39,7 @@
     "@babel/preset-env": "^7.21.5",
     "@babel/preset-typescript": "^7.21.5",
     "@types/greasemonkey": "^4.0.4",
+    "@types/js-cookie": "^3.0.0",
     "@typescript-eslint/eslint-plugin": "^5.59.1",
     "@typescript-eslint/parser": "^5.59.1",
     "@vue/compiler-sfc": "^3.2.47",
