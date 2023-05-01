@@ -3,23 +3,20 @@
     <CharacterCard v-for="char in characters" :key="char.characterId" :character="char">
     </CharacterCard>
   </ul>
+  <ConfirmDialog
+    :breakpoints="{ '960px': '75vw', '640px': '100vw' }"
+    :style="{ width: '50vw' }"
+  ></ConfirmDialog>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
+import ConfirmDialog from "primevue/confirmdialog";
 import CharacterCard from "./CharacterCard.vue";
 import { CharacterData, ActiveCharacter } from "../models/CharacterData";
 import { appStore } from "../store/app-store";
 import { get, post } from "../utils/apiAdapter";
-
-const iDRegex = /\/(\d+)\/*$/;
-const scdsUrl = "https://character-service-scds.dndbeyond.com/v2/characters";
-const baseUrl = "https://www.dndbeyond.com";
-const campaignBaseUrl = `${baseUrl}/api/campaign/stt`;
-const campaignUrl = `${campaignBaseUrl}/active-campaigns`;
-const activeCharacterUrl = `${campaignBaseUrl}/active-short-characters`;
-const defaultAvatarUrl = `${baseUrl}/content/1-0-1772-0/skins/waterdeep/images/characters/default-avatar.png`;
-const inviteFooterClass = "ddb-campaigns-invite-footer-item ddb-campaigns-invite-footer-item-copy-link";
+import { constants } from "../utils";
 
 interface CampaignResponse {
   id: number;
@@ -37,13 +34,13 @@ interface simpleCharacterResponse {
 
 const getActiveCharacters = async (campaignID: number) => {
   const result = await get<ActiveCharacter[]>(
-    `${activeCharacterUrl}/${campaignID}`
+    `${constants.activeCharacterUrl}/${campaignID}`
   );
   return result;
 };
 
 const getSimpleCharacterData = async (ids: number[]) => {
-  const result = await post<simpleCharacterResponse>(scdsUrl, {
+  const result = await post<simpleCharacterResponse>(constants.scdsUrl, {
     characterIds: ids,
   });
   return result.foundCharacters;
@@ -51,7 +48,7 @@ const getSimpleCharacterData = async (ids: number[]) => {
 
 const setInviteCode = () => {
   const inviteElements = document.getElementsByClassName(
-    inviteFooterClass
+    constants.inviteFooterClass
   );
   if (!inviteElements || inviteElements.length < 1) {
     return;
@@ -62,7 +59,7 @@ const setInviteCode = () => {
     return;
   }
 
-  const inviteMatch = inviteUrl.match(iDRegex);
+  const inviteMatch = inviteUrl.match(constants.iDRegex);
   if (!inviteMatch || inviteMatch.length < 2) {
     return;
   }
@@ -73,7 +70,7 @@ const setInviteCode = () => {
 
 const setCampaignData = async (campaignID: number) => {
   const result = await get<CampaignResponse>(
-    `${campaignUrl}/${campaignID}`
+    `${constants.campaignUrl}/${campaignID}`
   );
   const campaign = result;
   appStore.setCampaign(campaign);
@@ -82,13 +79,14 @@ const setCampaignData = async (campaignID: number) => {
 export default defineComponent({
   name: "CharacterListing",
   components: {
+    ConfirmDialog,
     CharacterCard,
   },
   setup: async () => {
     let characters = ref<CharacterData[]>([]);
 
     // Campaign phase
-    const campaignIdMatch = window.location.pathname.match(iDRegex);
+    const campaignIdMatch = window.location.pathname.match(constants.iDRegex);
     if (!campaignIdMatch) {
       return {
         characters,
@@ -101,8 +99,10 @@ export default defineComponent({
 
     // Character phase
     const fetchData = async () => {
-      const activeChars: ActiveCharacter[] = await getActiveCharacters(campaignID);
-
+      const activeChars: ActiveCharacter[] = await getActiveCharacters(
+        campaignID
+      );
+      console.log(activeChars);
       const charIds = activeChars.map((ch) => {
         return ch.id;
       });
@@ -122,7 +122,7 @@ export default defineComponent({
           const avatarUrl =
             active && active.avatarUrl
               ? active.avatarUrl
-              : defaultAvatarUrl;
+              : constants.defaultAvatarUrl;
           const userName = active && active.userName ? active.userName : "Unknown";
 
           ch.avatarUrl = avatarUrl;
@@ -136,7 +136,9 @@ export default defineComponent({
         });
     };
 
-    fetchData();
+    await fetchData();
+
+    console.log(characters.value);
     setInterval(fetchData, 30000);
     return {
       characters,

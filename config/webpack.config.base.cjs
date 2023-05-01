@@ -53,12 +53,20 @@ const webpackConfig = {
         use: [
           'style-loader',
           { loader: 'css-loader', options: { url: false } },
-          'sass-loader',
+          {
+            loader: 'sass-loader',
+            options: {
+              additionalData: '@import "src/styles/_variables.scss";',
+            },
+          },
         ],
       },
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader'],
+        use: [
+          'style-loader',
+          { loader: 'css-loader', options: { url: false } },
+        ],
       },
     ],
   },

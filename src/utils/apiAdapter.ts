@@ -104,14 +104,15 @@ async function getAuthToken() {
 async function makeRequest<T>(
   url: string,
   method: string = 'get',
-  data: any = null
+  data: any = null,
+  headers: globalThis.HeadersInit = {}
 ): Promise<T> {
   // Check if short-term token exists and is not expired
   await getAuthToken();
 
   // Set Authorization header with short-term token
-  const headers: globalThis.HeadersInit = {
-    Authorization: `Bearer ${shortTermToken?.token}`,
+  headers = {
+    Authorization: `Bearer ${shortTermToken?.token}`, ...headers
   };
   // Make the request using fetch
   const options: globalThis.RequestInit = { method, headers };
@@ -135,6 +136,10 @@ export async function get<T>(url: string): Promise<T> {
   return makeRequest<T>(url);
 }
 
-export async function post<T>(url: string, data: any): Promise<T> {
+export async function post<T>(url: string, data?: any): Promise<T> {
   return makeRequest<T>(url, 'post', data);
+}
+
+export async function postForm<T>(url: string, data?: any): Promise<T> {
+  return makeRequest<T>(url, 'post', data, { 'Content-Type': 'application/x-www-form-urlencoded' });
 }
