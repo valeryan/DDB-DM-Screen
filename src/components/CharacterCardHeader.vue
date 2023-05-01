@@ -1,5 +1,5 @@
 <template>
-  <div class="dms-header">
+  <div class="dms-header" v-if="character">
     <div class="dms-character">
       <div class="dms-portrait">
         <div
@@ -12,7 +12,7 @@
           {{ character.name }}
         </div>
         <div class="dms-info-secondary">
-          Lvl {{ character.level }} | {{ character.race.name }}
+          Lvl {{ character.level }} | {{ character.race?.name }}
         </div>
         <div class="dms-info-secondary">
           <template v-for="cl in character.classes" :key="cl.name"
@@ -26,8 +26,8 @@
       </div>
       <div class="dms-health">
         <div class="dms-health-hp">
-          {{ character.hitPointInfo.current }}/{{
-            character.hitPointInfo.maximum
+          {{ character.hitPointInfo?.current }}/{{
+            character.hitPointInfo?.maximum
           }}
         </div>
         <div class="dms-health-label">Hit Points</div>

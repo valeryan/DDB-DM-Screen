@@ -25,9 +25,8 @@ Development of this script requires a Chrome base browser for file system access
 
 ### Setup
 1. Allow Tampermonkey's access to local file URIs in Chrome, follow [tampermonkey/faq](https://tampermonkey.net/faq.php?ext=dhdg#Q204)
-2. Run the command `npm run dev`
 2. install deps with `npm i` or `npm ci`.
-3. `npm run dev` to start your development.
+3. use `npm run dev` to start your development.
 4. open `webpack-userscript-template/dist/ddb-dm-screen.dev.user.js` in your Chrome browser and install it with your userscript manager.
 
 this userscript's meta contains `// @require file://path/to/dist/ddb-dm-screen.debug.user.js`,

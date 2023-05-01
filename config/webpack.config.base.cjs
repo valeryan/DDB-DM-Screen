@@ -1,27 +1,26 @@
-const path = require("path");
+const path = require('path');
 const webpack = require('webpack');
-const { VueLoaderPlugin } = require("vue-loader");
+const { VueLoaderPlugin } = require('vue-loader');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 const webpackConfig = {
   resolve: {
-    extensions: [".js", ".ts"],
+    extensions: ['.js', '.ts'],
   },
   optimization: {
     minimize: false,
-    moduleIds: "named",
+    moduleIds: 'named',
   },
-  entry: "./src/index.ts",
+  entry: './src/index.ts',
   output: {
     publicPath: '/dist/',
-    path: path.resolve(__dirname, "../dist"),
+    path: path.resolve(__dirname, '../dist'),
   },
-  target: "web",
+  target: 'web',
   externals: {
-    "jwt-decode": "jwt_decode",
-    vue: "Vue",
-    axios: "axios",
-    "axios-userscript-adapter": "axiosGmxhrAdapter"
+    'jwt-decode': 'jwt_decode',
+    vue: 'Vue',
+    GM_fetch: 'GM_fetch',
   },
   module: {
     rules: [
@@ -31,7 +30,7 @@ const webpackConfig = {
       },
       {
         use: {
-          loader: "babel-loader",
+          loader: 'babel-loader',
         },
         test: /\.js$/,
       },
@@ -40,23 +39,27 @@ const webpackConfig = {
         exclude: /node_modules/,
         use: [
           {
-            loader: "babel-loader",
-            options: { babelrc: true }
+            loader: 'babel-loader',
+            options: { babelrc: true },
           },
           {
-            loader: "ts-loader",
-            options: { appendTsSuffixTo: [/\.vue$/], transpileOnly: true}
-          }
-        ]
+            loader: 'ts-loader',
+            options: { appendTsSuffixTo: [/\.vue$/], transpileOnly: true },
+          },
+        ],
       },
       {
         test: /\.s[ac]ss$/i,
-        use: ["style-loader", { loader: "css-loader", options: { url: false}}, "sass-loader"],
+        use: [
+          'style-loader',
+          { loader: 'css-loader', options: { url: false } },
+          'sass-loader',
+        ],
       },
       {
         test: /\.css$/,
-        use: ["style-loader", "css-loader"],
-      }
+        use: ['style-loader', 'css-loader'],
+      },
     ],
   },
   plugins: [
@@ -67,8 +70,8 @@ const webpackConfig = {
     }),
     new webpack.DefinePlugin({
       __VUE_OPTIONS_API__: 'true',
-      __VUE_PROD_DEVTOOLS__: 'false'
-    })
+      __VUE_PROD_DEVTOOLS__: 'false',
+    }),
   ],
 };
 

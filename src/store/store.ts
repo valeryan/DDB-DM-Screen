@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable prefer-const */
-import { reactive, readonly } from "vue";
+import { reactive, readonly } from 'vue';
 
 export abstract class Store<T extends Object> {
   protected state: T;
